@@ -1,0 +1,54 @@
+class Level_2 {
+
+  void drawLevel_2() {
+
+    background(25);
+    image(rd, 500, 150);
+    image(rd, 500, 300);
+    image(rd, 500, 450);
+    image(start, 1035, 500);
+    imageMode(CENTER);
+
+    fill(255, 255, 255);
+    textSize(50);
+    text("Score: " + score, 200, 500);
+
+    thisCar.drawCar();
+
+
+    for (int i=0; i<12; i++) {
+      badY[i] += speedY[i];
+      image(blk, badX[i], badY[i], 100, 50);
+      if (badY[i] >= height) {
+        badY[i] = -10;
+        badX[i] = (random(0, 800));
+      }
+      if (thisCar.mainX == 30) {
+        speedY[i] ++;
+      }
+      if (badY[i] == safeX) {
+        badY[i] = (random(0, 600));
+      }
+    }
+
+    for (int i=0; i<12; i++) {
+      float distance = dist(badX[i], badY[i], thisCar.mainX, thisCar.mainY);
+      if (distance < 100/2 + 10/2) {
+        gameState = "gameOver";
+
+        thisCar.mainX = width - 50;
+        thisCar.mainY = height/2;
+
+        if (thisCar.mainX == 30) {
+          textAlign(CENTER);
+          textSize(75);
+          text("FINISH !!!", 300, 100);
+          score ++;
+
+          thisCar.mainX = width - 50;
+          thisCar.mainY = height/2;
+        }
+      }
+    }
+  }
+}

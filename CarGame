@@ -1,0 +1,234 @@
+Car thisCar;
+Level_2 thisLevel;
+float[] badY = new float[12];
+float [] badX = new float[12];
+float [] speedX = new float[12];
+float [] speedY = new float[12];
+
+boolean holdingLeft;
+boolean holdingRight;
+boolean holdingUp;
+boolean holdingDown;
+
+PImage img;
+PImage rd;
+PImage blk;
+PImage start;
+PImage flg;
+PImage fire;
+PImage jkr;
+
+int score;
+int winner;
+int safeX;
+int safeY;
+
+String gameState;
+
+void setup() {
+  size(1000, 600);
+
+  gameState = "title";
+
+  rd = loadImage("Road.jpeg");
+  blk = loadImage("black car.png");
+  start = loadImage("finish line.jpeg");
+  flg = loadImage("flags.jpeg");
+  fire = loadImage("fire.jpeg");
+  jkr = loadImage("joker.jpeg");
+
+  score = 0;
+  winner = 1;
+  safeX = 800;
+
+  thisCar = new Car();
+  thisLevel = new Level_2();
+
+  holdingLeft = false;
+  holdingRight = false;
+  holdingUp = false;
+  holdingDown = false;
+
+  for (int i=0; i<12; i++) {
+    badX[i] = random(width);
+    badY[i] = random(height);
+    speedX[i] = 1;
+    speedY[i] = 1;
+    if (badX[i] >= safeX) {
+      badX[i] = 0;
+    }
+  }
+}
+
+void draw() {
+  if (gameState == "game") {
+    drawGame();
+  }
+  if (gameState == "title") {
+    drawTitle();
+  }
+  if (gameState == "gameOver") {
+    drawGameOver();
+  }
+  for (int i=0; i<12; i++) {
+    if (gameState == "gameOver") {
+      speedX[i] = 1;
+    }
+    if (badX[i] >= safeX) {
+      badX[i] = -20;
+    }
+  }
+}
+
+void drawGame() {
+  background(25);
+  image(rd, 500, 150);
+  image(rd, 500, 300);
+  image(rd, 500, 450);
+  image(start, 1035, 500);
+  imageMode(CENTER);
+
+
+  fill(255, 255, 255);
+  textSize(50);
+  text("Score: " + score, 200, 500);
+
+  thisCar.drawCar();    
+
+  for (int i=0; i<12; i++) {
+    badX[i] += speedX[i];
+    image(blk, badX[i], badY[i], 100, 50);
+    if (badX[i] >= width) {
+      badX[i] = -10;
+      badY[i] = (random(0, 600));
+    }
+    if (thisCar.mainX == 30) {
+      speedX[i] ++;
+    }
+    if (badX[i] == safeX) {
+      badX[i] = 0;
+      badY[i] = (random(0, 600));
+    }
+  }
+
+  for (int i=0; i<12; i++) {
+    float distance = dist(badX[i], badY[i], thisCar.mainX, thisCar.mainY);
+    if (distance < 100/2 + 10/2) {
+      gameState = "gameOver";
+
+      thisCar.mainX = width - 50;
+      thisCar.mainY = height/2;
+
+      if (thisCar.mainX == 30) {
+        textAlign(CENTER);
+        textSize(75);
+        text("FINISH !!!", 300, 100);
+        //score++;
+
+        thisCar.mainX = width - 50;
+        thisCar.mainY = height/2;
+      }
+    }
+  }
+  scoreToWin();
+}
+
+void scoreToWin() {
+  if (score == winner) {
+
+    background ((random(0, 255)), random(0, 255), random(0, 255));
+    fill(0, 0, 0);
+    textAlign(CENTER);
+    textSize(100);
+    text("WINNER !!!!!", 500, 200);
+    textAlign(CENTER);
+    textSize(100);
+    text("WINNER !!!!!", 500, 300);
+    textAlign(CENTER);
+    textSize(100);
+    text("WINNER !!!!!", 500, 400);
+    textSize(60);
+    text("press 'SPACE' to play continuous level", 500, 500);
+    textSize(30);
+    text("*IT WONT BE THAT EASY THIS TIME !!*", 500, 550);
+  }
+}
+
+void drawTitle() {
+  background(0, 0, 0);
+  image(fire, 500, 400);
+  image(flg, 500, 300);
+  imageMode(CENTER);
+
+  textAlign(CENTER);
+  textSize(100);
+  fill(255, 255, 255);
+  text("READY... SET..", width/2, 100);
+
+  textAlign(CENTER);
+  textSize(80);
+  fill(255, 255, 255);
+  text("press 'SPACE' to GO!!!", width/2, 550);
+}
+
+void drawGameOver() {
+  background(255, 255, 255);
+  image(jkr, 500, 300);
+
+  fill(255, 0, 0);
+  textAlign(CENTER);
+  textSize(120);
+  text("GAME OVER!", width/2, 100);
+  fill(255, 100, 0);
+  textSize(70);
+  text("press 'H' to go home a loser", width/2, 450);
+  fill(0);
+  text("press 'R' to redeem yourself", width/2, 550);
+
+  score = 0;
+}
+
+void keyPressed() {
+  if (keyCode == RIGHT) {
+    holdingRight = true;
+  }
+  if (keyCode == LEFT) {
+    holdingLeft = true;
+  }
+  if (keyCode == UP) {
+    holdingUp = true;
+  }
+  if (keyCode == DOWN) {
+    holdingDown = true;
+  }
+  if (gameState == "title" && key == ' ') {
+    gameState = "game";
+  }
+  if (gameState == "gameOver" && key == 'h') {
+    gameState = "title";
+  }
+  if (gameState == "gameOver" && key == 'r') {
+    gameState = "game";
+  }
+  if (score == winner && key == ' ') {
+    //gameState = "title";
+    score += 1;
+    thisLevel.drawLevel_2();
+  }
+}
+
+
+void keyReleased() {
+  if (keyCode == RIGHT) {
+    holdingRight = false;
+  }
+  if (keyCode == LEFT) {
+    holdingLeft = false;
+  }
+  if (keyCode == UP) {
+    holdingUp = false;
+  }
+  if (keyCode == DOWN) {
+    holdingDown = false;
+  }
+}

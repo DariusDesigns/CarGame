@@ -1,0 +1,49 @@
+class Car {
+
+  float mainX;
+  float mainY;
+
+  PImage img;
+  PImage img2;
+
+  Car() {
+    mainX = width - 50;
+    mainY = height /2;
+    //drawCar();
+  }
+
+  void drawCar() {
+
+    img = loadImage("red car.png");
+
+    image(img, mainX, mainY, 100, 60);
+
+    if (mainX == 30) {
+      score ++;
+    }
+    if (holdingLeft == true) {
+      mainX -= 10;
+    }
+    if (holdingRight == true) {
+      mainX += 10;
+    }
+    if (holdingUp == true) {
+      mainY -= 10;
+    }
+    if (holdingDown == true) {
+      mainY += 10;
+    }
+    if (mainY > height) {
+      mainY = -10;
+    }
+    if (mainX > width) {
+      mainX = -10;
+    }
+    if (mainY < -10) {
+      mainY = height;
+    }
+    if (mainX < -10) {
+      mainX = width;
+    }
+  }
+}
